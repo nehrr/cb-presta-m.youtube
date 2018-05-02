@@ -23,8 +23,19 @@ const styles = StyleSheet.create({
   },
 
   actionsImage: {
-    height: 35,
-    width: 35
+    height: 25,
+    width: 25
+  },
+
+  actionsMargin: {
+    marginRight: 6
+  },
+
+  textHeader: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 26,
+    marginLeft: 16
   },
 
   textScroll: {

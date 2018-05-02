@@ -9,19 +9,16 @@ import {
 } from "react-native";
 import Actions from "../components/actions";
 import styles from "../style/styles";
+import { StackNavigator } from "react-navigation";
 
 class Home extends React.Component {
-  static navigationOptions = {
-    title: "Youplicate",
+  static navigationOptions = ({ navigation }) => ({
+    headerLeft: <Text style={styles.textHeader}>Youplicate</Text>,
     headerStyle: {
       backgroundColor: "#C20712"
     },
-    headerTintColor: "#fff",
-    headerTitleStyle: {
-      fontWeight: "bold"
-    },
-    headerRight: <Actions />
-  };
+    headerRight: <Actions navigation={navigation} />
+  });
 
   state = {
     obj: [
