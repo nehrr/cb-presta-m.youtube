@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Picker } from "react-native";
+import { Text, View, Picker, AsyncStorage } from "react-native";
 import styles from "../style/styles";
 import Actions from "../components/actions";
 import { CONFIG } from "../constants/index";
@@ -24,6 +24,22 @@ class Settings extends React.Component {
     locale: []
   };
 
+  componentWillMount() {
+    console.log("will mount");
+    try {
+      AsyncStorage.getItem("@Storage:locale").then(res => {
+        if (res) {
+          const temp = JSON.parse(res);
+          this.setState({
+            locale: temp
+          });
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   componentDidMount() {
     const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
     const query = "part=snippet&hl=en_GB";
@@ -39,6 +55,13 @@ class Settings extends React.Component {
         this.setState({
           locale: temp
         });
+
+        try {
+          console.log("storage");
+          AsyncStorage.setItem("@Storage:locale", JSON.stringify(temp));
+        } catch (error) {
+          console.log(error);
+        }
       })
 
       .catch(error => {
