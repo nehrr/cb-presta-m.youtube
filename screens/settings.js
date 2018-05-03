@@ -1,27 +1,22 @@
 import React from "react";
 import { Text, View, Picker, AsyncStorage } from "react-native";
+import { connect } from "react-redux";
 import styles from "../style/styles";
 import Actions from "../components/actions";
 import { CONFIG } from "../constants/index";
 
 class Settings extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    headerLeft: (
-      <Text
-        style={styles.textHeader}
-        onPress={() => navigation.navigate("Home")}
-      >
-        Youplicate
-      </Text>
-    ),
+    title: "Settings",
     headerStyle: {
       backgroundColor: "#C20712"
-    },
-    headerRight: <Actions navigation={navigation} />
+    }
   });
 
   state = {
-    locale: []
+    locale: [],
+    isSearchOpen: false,
+    countries: []
   };
 
   componentWillMount() {
@@ -31,7 +26,8 @@ class Settings extends React.Component {
         if (res) {
           const temp = JSON.parse(res);
           this.setState({
-            locale: temp
+            locale: temp,
+            countries: temp
           });
         }
       });
@@ -50,10 +46,13 @@ class Settings extends React.Component {
       .then(responseJson => {
         let temp = [];
         for (let item of responseJson.items) {
-          temp.push(item);
+          let gl = item.snippet.gl;
+          let name = item.snippet.name;
+          temp.push({ gl, name });
         }
         this.setState({
-          locale: temp
+          locale: temp,
+          countries: temp
         });
 
         try {
@@ -69,25 +68,32 @@ class Settings extends React.Component {
       });
   }
 
+  getCountryName = code => {
+    let res = "";
+    this.state.countries.map(item => {
+      if (item.gl == code) {
+        res = item.name;
+      }
+    });
+    return res;
+  };
+
   render() {
     let list = this.state.locale.map((item, idx) => {
-      return (
-        <Picker.Item
-          key={idx}
-          label={item.snippet.name}
-          value={item.snippet.gl}
-        />
-      );
+      return <Picker.Item key={idx} label={item.name} value={item.gl} />;
     });
 
     return (
       <View style={styles.container}>
         <Text style={styles.textBlack}>Please pick a region</Text>
         <Picker
-          selectedValue={this.state.locale}
+          selectedValue={this.props.locale}
           style={styles.picker}
           onValueChange={item => {
-            console.log(item);
+            this.props.dispatch({
+              type: "getLocale",
+              payload: { item, name: this.getCountryName(item) }
+            });
           }}
         >
           {list}
@@ -97,4 +103,10 @@ class Settings extends React.Component {
   }
 }
 
-export default Settings;
+const mapStateToProps = state => {
+  return {
+    locale: state.locale
+  };
+};
+
+export default connect(mapStateToProps)(Settings);

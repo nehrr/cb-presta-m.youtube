@@ -1,6 +1,7 @@
 import React from "react";
 import { View, TouchableOpacity, Image } from "react-native";
 import { StackNavigator } from "react-navigation";
+import { connect } from "react-redux";
 import styles from "../style/styles";
 
 class Actions extends React.Component {
@@ -9,7 +10,7 @@ class Actions extends React.Component {
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.actionsMargin}
-          // onPress={() => this.props.navigation.navigate("Search")}
+          onPress={() => this.props.dispatch({ type: "isSearchOpen" })}
           // onPress={() => console.log(this.props)}
         >
           <Image
@@ -28,7 +29,7 @@ class Actions extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionsMargin}
-          onPress={() => this.props.navigation.navigate("Likes")}
+          // onPress={() => this.props.navigation.navigate("Likes")}
         >
           <Image
             style={styles.actionsImage}
@@ -49,4 +50,11 @@ class Actions extends React.Component {
   }
 }
 
-export default Actions;
+const mapStateToProps = state => {
+  return {
+    locale: state.locale,
+    isSearchOpen: state.isSearchOpen
+  };
+};
+
+export default connect(mapStateToProps)(Actions);

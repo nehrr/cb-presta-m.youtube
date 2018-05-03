@@ -10,7 +10,9 @@
     "react-native": "^0.54.0",
     "react-native-scripts": "^1.14.0",
     "react-navigation": "^1.5.11",
-    "react-scripts": "1.1.4"
+    "react-redux": "^5.0.7",
+    "react-scripts": "1.1.4",
+    "redux": "^4.0.0"
   },
   "main": "./node_modules/react-native-scripts/build/bin/crna-entry.js",
   "scripts": {

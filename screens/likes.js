@@ -5,14 +5,6 @@ import Actions from "../components/actions";
 
 class Likes extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    headerLeft: (
-      <Text
-        style={styles.textHeader}
-        onPress={() => navigation.navigate("Home")}
-      >
-        Youplicate
-      </Text>
-    ),
     headerStyle: {
       backgroundColor: "#C20712"
     },

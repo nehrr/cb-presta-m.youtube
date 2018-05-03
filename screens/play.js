@@ -1,29 +1,28 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { WebView, View } from "react-native";
 import styles from "../style/styles";
-import Actions from "../components/actions";
 
 class Play extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    headerLeft: (
-      <Text
-        style={styles.textHeader}
-        onPress={() => navigation.navigate("Home")}
-      >
-        Youplicate
-      </Text>
-    ),
+    title: navigation.state.params.title.slice(0, 20),
     headerStyle: {
       backgroundColor: "#C20712"
-    },
-    headerRight: <Actions navigation={navigation} />
+    }
   });
 
+  state = {
+    isSearchOpen: false
+  };
+
   render() {
+    const BASE_URL = "https://www.youtube.com/watch?v=";
+
     return (
-      <View style={styles.container}>
-        <Text style={styles.textBlack}>Likes</Text>
-      </View>
+      <WebView
+        source={{
+          uri: `${BASE_URL}${this.props.navigation.state.params.url}`
+        }}
+      />
     );
   }
 }

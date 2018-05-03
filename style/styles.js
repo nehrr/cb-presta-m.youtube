@@ -46,28 +46,45 @@ const styles = StyleSheet.create({
     color: "#000",
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 26,
-    marginTop: 52
+    fontSize: 26
   },
 
   textScroll: {
-    color: "#000",
-    textAlign: "center"
+    color: "#fff",
+    textAlign: "center",
+    marginTop: 10
   },
 
   cell: {
-    borderWidth: 1,
-    borderColor: "#828289",
-    width: width,
-    padding: 20
+    // borderWidth: 1,
+    // borderColor: "#828289",
+    width: width - 20,
+    marginLeft: 10,
+    marginRight: 10
   },
 
   preview: {
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
-    width: width - 40,
+    width: width - 20,
     height: 200
+  },
+
+  searchBar: {
+    height: 40,
+    borderColor: "#C20712",
+    borderWidth: 2
+  },
+
+  videoTitle: {
+    height: 40,
+    backgroundColor: "#000"
+  },
+
+  trending: {
+    height: 50,
+    padding: 8
   }
 });
 
