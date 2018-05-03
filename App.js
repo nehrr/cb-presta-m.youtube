@@ -1,10 +1,16 @@
 import React, { Component } from "react";
 import { StackNavigator } from "react-navigation";
-import Home from "./views/home";
-import Search from "./views/search";
-import Likes from "./views/likes";
-import Profile from "./views/profile";
-import Play from "./views/play";
+import Home from "./screens/home";
+import Search from "./screens/search";
+import Likes from "./screens/likes";
+import Profile from "./screens/profile";
+import Play from "./screens/play";
+
+// redux to keep locale
+// # to random region locale
+// store locale in Storage
+// magnifier opens text input
+// get gl/name from API for locale
 
 const RootStack = StackNavigator(
   {

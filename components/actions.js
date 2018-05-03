@@ -23,7 +23,7 @@ class Actions extends React.Component {
         >
           <Image
             style={styles.actionsImage}
-            source={require("../assets/play.png")}
+            source={require("../assets/hash.png")}
           />
         </TouchableOpacity>
         <TouchableOpacity

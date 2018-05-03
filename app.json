@@ -3,6 +3,12 @@
     "sdkVersion": "26.0.0",
     "name": "Youplicate",
     "slug": "youplicate-nehrr",
-    "privacy": "public"
+    "privacy": "public",
+    "icon": "./assets/logo.png",
+    "splash": {
+      "image": "./assets/youplicate.png",
+      "backgroundColor": "#FFFFFF",
+      "resizeMode": "contain"
+    }
   }
 }

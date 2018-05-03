@@ -50,10 +50,12 @@ const styles = StyleSheet.create({
     padding: 20
   },
 
-  image: {
+  preview: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 52
+    marginBottom: 16,
+    width: width - 40,
+    height: 200
   }
 });
 
