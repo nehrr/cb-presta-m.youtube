@@ -9,7 +9,7 @@ class Actions extends React.Component {
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.actionsMargin}
-          onPress={() => this.props.navigation.navigate("Search")}
+          // onPress={() => this.props.navigation.navigate("Search")}
           // onPress={() => console.log(this.props)}
         >
           <Image
@@ -19,7 +19,7 @@ class Actions extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionsMargin}
-          onPress={() => this.props.navigation.navigate("Play")}
+          // onPress={() => this.props.navigation.navigate("Play")}
         >
           <Image
             style={styles.actionsImage}
