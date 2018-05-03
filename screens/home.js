@@ -64,13 +64,11 @@ class Home extends React.Component {
       );
     });
 
-    // if (this.state.obj.length > 0) {
     return (
       <View style={styles.container}>
         <ScrollView>{list}</ScrollView>
       </View>
     );
-    // }
   }
 }
 

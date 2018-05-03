@@ -17,6 +17,10 @@ const styles = StyleSheet.create({
     })
   },
 
+  picker: {
+    margin: 52
+  },
+
   actions: {
     flex: 1,
     flexDirection: "row"
@@ -36,6 +40,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 26,
     marginLeft: 16
+  },
+
+  textBlack: {
+    color: "#000",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 26,
+    marginTop: 52
   },
 
   textScroll: {

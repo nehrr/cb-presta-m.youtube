@@ -37,7 +37,7 @@ class Actions extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionsMargin}
-          onPress={() => this.props.navigation.navigate("Profile")}
+          onPress={() => this.props.navigation.navigate("Settings")}
         >
           <Image
             style={styles.actionsImage}

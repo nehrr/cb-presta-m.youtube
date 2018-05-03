@@ -3,7 +3,7 @@ import { StackNavigator } from "react-navigation";
 import Home from "./screens/home";
 import Search from "./screens/search";
 import Likes from "./screens/likes";
-import Profile from "./screens/profile";
+import Settings from "./screens/settings";
 import Play from "./screens/play";
 
 // redux to keep locale
@@ -26,8 +26,8 @@ const RootStack = StackNavigator(
     Play: {
       screen: Play
     },
-    Profile: {
-      screen: Profile
+    Settings: {
+      screen: Settings
     }
   },
   {

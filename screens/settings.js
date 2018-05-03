@@ -1,10 +1,10 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text, View, Picker } from "react-native";
 import styles from "../style/styles";
 import Actions from "../components/actions";
 import { CONFIG } from "../constants/index";
 
-class Profile extends React.Component {
+class Settings extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     headerLeft: (
       <Text
@@ -32,24 +32,46 @@ class Profile extends React.Component {
     fetch(url)
       .then(response => response.json())
       .then(responseJson => {
-        console.log(responseJson);
-
+        let temp = [];
+        for (let item of responseJson.items) {
+          temp.push(item);
+        }
         this.setState({
-          locale: responseJson
+          locale: temp
         });
       })
+
       .catch(error => {
         console.error(error);
       });
   }
 
   render() {
+    let list = this.state.locale.map((item, idx) => {
+      return (
+        <Picker.Item
+          key={idx}
+          label={item.snippet.name}
+          value={item.snippet.gl}
+        />
+      );
+    });
+
     return (
       <View style={styles.container}>
-        <Text style={styles.textBlack}>Profile</Text>
+        <Text style={styles.textBlack}>Please pick a region</Text>
+        <Picker
+          selectedValue={this.state.locale}
+          style={styles.picker}
+          onValueChange={item => {
+            console.log(item);
+          }}
+        >
+          {list}
+        </Picker>
       </View>
     );
   }
 }
 
-export default Profile;
+export default Settings;
