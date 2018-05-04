@@ -46,14 +46,14 @@ function reducer(prevState = initState, action) {
         isSearch: false
       });
     case "newSearch":
-      console.log(action.payload.search);
       return Object.assign({}, prevState, {
         search: action.payload.search,
         isSearch: true
       });
     case "addToFavourites":
+      console.log(action.payload.newFavs);
       return Object.assign({}, prevState, {
-        favourites: action.payload.item
+        favourites: action.payload.newFavs
       });
     case "removeFromFavourites":
       return Object.assign({}, prevState, {
@@ -109,6 +109,7 @@ class App extends Component {
 
     if (locale) {
       let myLocale = JSON.parse(locale);
+
       let favourites;
       if (JSON.parse(liked)) {
         favourites = JSON.parse(liked);
@@ -125,6 +126,7 @@ class App extends Component {
         isSearch: false,
         favourites: favourites
       };
+
       this.setState({ store: createStore(reducer, smth) });
     } else {
       this.setState({ store: store });

@@ -81,7 +81,7 @@ class Home extends React.Component {
     // console.log(this.props.locale);
     const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
     console.log("fetchVideos");
-    const query = `&part=snippet&order=rating&maxResults=2&chart=mostPopular`;
+    const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
     fetch(url)
@@ -149,14 +149,14 @@ class Home extends React.Component {
 
   removeFromFavourites = item => {
     const { FAVOURITES } = CONFIG.STORAGE;
-    console.log(this.props.favourites);
+    // console.log(this.props.favourites);
     try {
       let temp = [...this.props.favourites];
-      temp.splice(item, 1);
-      AsyncStorage.setItem(FAVOURITES, JSON.stringify(temp)).then(() => {
+      let newTemp = _.filter(temp, { item });
+      AsyncStorage.setItem(FAVOURITES, JSON.stringify(newTemp)).then(() => {
         this.props.dispatch({
           type: "removeFromFavourites",
-          payload: { array: temp }
+          payload: { array: newTemp }
         });
       });
     } catch (error) {
@@ -166,7 +166,6 @@ class Home extends React.Component {
 
   render() {
     // console.log(this.props.favourites);
-    const { FAVOURITES } = CONFIG.STORAGE;
     const list = this.state.obj.map((item, idx) => {
       // console.log(item);
       return (
@@ -183,8 +182,8 @@ class Home extends React.Component {
               {" "}
               <TouchableOpacity
                 onPress={() => {
-                  if (_.some(this.state.favourite, item)) {
-                    console.log("already exists");
+                  // console.log(item, idx);
+                  if (_.some(this.props.favourite, item)) {
                     this.removeFromFavourites(item);
                   } else {
                     this.addToFavourites(item);
