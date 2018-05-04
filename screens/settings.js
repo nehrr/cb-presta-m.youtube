@@ -68,6 +68,7 @@ class Settings extends React.Component {
         } catch (error) {
           console.log(error);
         }
+        this.props.dispatch({ type: "getCountries", payload: { temp } });
         this.setState({
           countries: temp
         });

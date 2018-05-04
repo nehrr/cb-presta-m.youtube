@@ -153,6 +153,8 @@ class Home extends React.Component {
     try {
       let temp = [...this.props.favourites];
       let newTemp = _.filter(temp, { item });
+      console.log(temp);
+      console.log(newTemp);
       AsyncStorage.setItem(FAVOURITES, JSON.stringify(newTemp)).then(() => {
         this.props.dispatch({
           type: "removeFromFavourites",
@@ -165,6 +167,7 @@ class Home extends React.Component {
   };
 
   render() {
+    console.log("rerender");
     // console.log(this.props.favourites);
     const list = this.state.obj.map((item, idx) => {
       // console.log(item);
@@ -187,6 +190,7 @@ class Home extends React.Component {
                     this.removeFromFavourites(item);
                   } else {
                     this.addToFavourites(item);
+                    // this.removeFromFavourites(item);
                   }
                 }}
               >

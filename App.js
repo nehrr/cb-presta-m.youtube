@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { AsyncStorage, Text } from "react-native";
+import { AsyncStorage, Text, View } from "react-native";
 import { StackNavigator } from "react-navigation";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
 
+import styles from "./style/styles";
 import Home from "./screens/home";
 import Search from "./screens/search";
 import Likes from "./screens/likes";
@@ -33,6 +34,10 @@ function reducer(prevState = initState, action) {
       return Object.assign({}, prevState, {
         locale: action.payload.item,
         localeName: action.payload.name
+      });
+    case "getCountries":
+      return Object.assign({}, prevState, {
+        countries: action.payload.temp
       });
     case "isSearchOpen":
       return Object.assign({}, prevState, {
@@ -103,6 +108,7 @@ class App extends Component {
 
   async componentWillMount() {
     const { AVAILABLE_REGIONS, CURRENT_REGION, FAVOURITES } = CONFIG.STORAGE;
+
     const locale = await AsyncStorage.getItem(CURRENT_REGION);
     const countries = await AsyncStorage.getItem(AVAILABLE_REGIONS);
     const liked = await AsyncStorage.getItem(FAVOURITES);
@@ -136,7 +142,11 @@ class App extends Component {
 
   render() {
     if (this.state.isLoading) {
-      return <Text>Loading Parameters</Text>;
+      return (
+        <View style={styles.container}>
+          <Text style={styles.textBlack}>Loading Parameters</Text>
+        </View>
+      );
     } else {
       return (
         <Provider store={this.state.store}>
