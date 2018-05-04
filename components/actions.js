@@ -63,7 +63,7 @@ class Actions extends React.Component {
         >
           <Image
             style={styles.actionsImage}
-            source={require("../assets/user.png")}
+            source={require("../assets/settings.png")}
           />
         </TouchableOpacity>
       </View>
