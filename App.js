@@ -21,7 +21,8 @@ const initState = {
   locale: "FR",
   isSearchOpen: false,
   localeName: "",
-  countries: []
+  countries: [],
+  search: ""
 };
 
 function reducer(prevState = initState, action) {
@@ -40,6 +41,11 @@ function reducer(prevState = initState, action) {
       return Object.assign({}, prevState, {
         locale: action.payload.locale.gl,
         localeName: action.payload.locale.name
+      });
+    case "newSearch":
+      console.log(action.payload.search);
+      return Object.assign({}, prevState, {
+        search: action.payload.search
       });
 
     default:
@@ -77,6 +83,7 @@ class App extends Component {
     isLoading: true,
     locale: "",
     countries: [],
+    search: "",
     store: store
   };
 
@@ -91,7 +98,8 @@ class App extends Component {
         locale: myLocale.gl,
         countries: JSON.parse(countries),
         isSearchOpen: false,
-        localeName: myLocale.name
+        localeName: myLocale.name,
+        search: ""
       };
       this.setState({ store: createStore(reducer, smth) });
     } else {

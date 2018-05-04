@@ -22,17 +22,22 @@ class Home extends React.Component {
     obj: [],
     isSearchOpen: false,
     locale: "",
-    localeName: ""
+    localeName: "",
+    search: ""
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
     console.log("getderived");
-    console.log("nextProps: ", nextProps.locale);
-    console.log("prevState: ", prevState.locale);
-    if (nextProps !== prevState) {
+    console.log("nextProps: ", nextProps.search);
+    console.log("prevState: ", prevState.search);
+    if (
+      nextProps.locale !== prevState.locale ||
+      nextProps.search !== prevState.search
+    ) {
       return {
         locale: nextProps.locale,
-        obj: []
+        obj: [],
+        search: nextProps.search
       };
     }
     return null;
@@ -40,10 +45,14 @@ class Home extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     console.log("didupdate");
+    console.log(this.state.search);
     console.log("prevProps: ", prevProps.locale);
     console.log("prevState: ", prevState.locale);
     if (this.state.locale !== prevProps.locale) {
       this.fetchVideos();
+    }
+    if (this.state.search !== prevProps.search) {
+      this.fetchVideosSearch();
     }
   }
 
@@ -70,6 +79,31 @@ class Home extends React.Component {
         this.setState({
           obj: temp,
           locale: locale
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  fetchVideosSearch = () => {
+    const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
+    console.log(this.props);
+    const search = this.props.search;
+    console.log("fetchVideosSearch");
+    const query = "&part=snippet&maxResults=20&chart=mostPopular";
+    let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(responseJson => {
+        let temp = [];
+        responseJson.items.forEach(item => {
+          temp.push(item);
+        });
+
+        this.setState({
+          obj: temp
         });
       })
       .catch(error => {
@@ -125,7 +159,8 @@ const mapStateToProps = state => {
   return {
     locale: state.locale,
     isSearchOpen: state.isSearchOpen,
-    localeName: state.localeName
+    localeName: state.localeName,
+    search: state.search
   };
 };
 
