@@ -32,13 +32,25 @@ class Home extends React.Component {
     localeName: ""
   };
 
-  //still buggy
   static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.locale == prevState.locale) {
-      return null;
-    } else {
-      // console.log("change");
-      return { obj: [] };
+    console.log("getderived");
+    console.log("nextProps: ", nextProps.locale);
+    console.log("prevState: ", prevState.locale);
+    if (nextProps !== prevState) {
+      return {
+        locale: nextProps.locale,
+        obj: []
+      };
+    }
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log("didupdate");
+    console.log("prevProps: ", prevProps.locale);
+    console.log("prevState: ", prevState.locale);
+    if (this.state.locale !== prevProps.locale) {
+      this.fetchVideos();
     }
   }
 
@@ -46,18 +58,11 @@ class Home extends React.Component {
     this.fetchVideos();
   }
 
-  componentDidUpdate(nextProps, prevState) {
-    if (nextProps.locale != prevState.locale) {
-      this.fetchVideos();
-    } else {
-      // console.log("error");
-    }
-  }
-
   fetchVideos = () => {
     const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
+    console.log(this.props.locale);
     const locale = this.props.locale ? this.props.locale : "FR";
-    // console.log(locale);
+    console.log("fetchVideos");
     const query = "&part=snippet&order=rating&maxResults=20&chart=mostPopular";
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
@@ -75,12 +80,11 @@ class Home extends React.Component {
         });
       })
       .catch(error => {
-        // console.error(error);
+        console.error(error);
       });
   };
 
   render() {
-    console.log("home ", this.props.localeName);
     const list = this.state.obj.map((item, idx) => {
       return (
         <View key={idx} style={styles.cell}>
@@ -111,7 +115,8 @@ class Home extends React.Component {
 
     return (
       <View style={styles.container}>
-        {this.props.isSearchOpen == true && <SearchBar />}
+        {this.props.isSearchOpen ? <SearchBar /> : null}
+        {/* {this.props.isSearchOpen ? console.log("searchbar loading") : null} */}
         <TouchableOpacity style={styles.trending}>
           <Text style={styles.textBlack}>
             Trending in{" "}

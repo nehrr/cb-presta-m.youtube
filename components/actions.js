@@ -20,7 +20,8 @@ class Actions extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionsMargin}
-          // onPress={() => this.props.navigation.navigate("Play")}
+          // onPress={() => console.log(getRandom().text())}
+          onPress={() => this.props.dispatch({ type: "randomLocale" })}
         >
           <Image
             style={styles.actionsImage}
@@ -53,7 +54,8 @@ class Actions extends React.Component {
 const mapStateToProps = state => {
   return {
     locale: state.locale,
-    isSearchOpen: state.isSearchOpen
+    isSearchOpen: state.isSearchOpen,
+    countries: state.countries
   };
 };
 

@@ -14,20 +14,30 @@ class Settings extends React.Component {
   });
 
   state = {
-    locale: [],
+    locale: "",
     isSearchOpen: false,
     countries: []
   };
 
   componentWillMount() {
+    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
     console.log("will mount");
     try {
-      AsyncStorage.getItem("@Storage:locale").then(res => {
+      AsyncStorage.getItem(AVAILABLE_REGIONS).then(res => {
+        console.log(res);
         if (res) {
           const temp = JSON.parse(res);
           this.setState({
-            locale: temp,
             countries: temp
+          });
+        }
+      });
+      AsyncStorage.getItem(CURRENT_REGION).then(res => {
+        console.log(res);
+        if (res) {
+          const temp = JSON.parse(res);
+          this.setState({
+            locale: temp
           });
         }
       });
@@ -37,6 +47,7 @@ class Settings extends React.Component {
   }
 
   componentDidMount() {
+    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
     const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
     const query = "part=snippet&hl=en_GB";
     let url = `${BASE_URL}/i18nRegions?${query}&key=${API_KEY}`;
@@ -50,17 +61,16 @@ class Settings extends React.Component {
           let name = item.snippet.name;
           temp.push({ gl, name });
         }
-        this.setState({
-          locale: temp,
-          countries: temp
-        });
 
         try {
           console.log("storage");
-          AsyncStorage.setItem("@Storage:locale", JSON.stringify(temp));
+          AsyncStorage.setItem(AVAILABLE_REGIONS, JSON.stringify(temp));
         } catch (error) {
           console.log(error);
         }
+        this.setState({
+          countries: temp
+        });
       })
 
       .catch(error => {
@@ -69,17 +79,24 @@ class Settings extends React.Component {
   }
 
   getCountryName = code => {
+    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
     let res = "";
     this.state.countries.map(item => {
       if (item.gl == code) {
         res = item.name;
+        try {
+          console.log("storage");
+          AsyncStorage.setItem(CURRENT_REGION, JSON.stringify(item));
+        } catch (error) {
+          console.log(error);
+        }
       }
     });
     return res;
   };
 
   render() {
-    let list = this.state.locale.map((item, idx) => {
+    let list = this.state.countries.map((item, idx) => {
       return <Picker.Item key={idx} label={item.name} value={item.gl} />;
     });
 

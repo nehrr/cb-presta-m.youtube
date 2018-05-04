@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { AsyncStorage, Text } from "react-native";
 import { StackNavigator } from "react-navigation";
 import { Provider } from "react-redux";
 import { createStore } from "redux";
@@ -8,6 +9,7 @@ import Search from "./screens/search";
 import Likes from "./screens/likes";
 import Settings from "./screens/settings";
 import Play from "./screens/play";
+import { CONFIG } from "./constants/index";
 
 // redux to keep locale
 // # to random region locale
@@ -16,9 +18,10 @@ import Play from "./screens/play";
 // get gl/name from API for locale
 
 const initState = {
-  locale: "",
+  locale: "FR",
   isSearchOpen: false,
-  localeName: ""
+  localeName: "",
+  countries: []
 };
 
 function reducer(prevState = initState, action) {
@@ -32,6 +35,15 @@ function reducer(prevState = initState, action) {
     case "isSearchOpen":
       return Object.assign({}, prevState, {
         isSearchOpen: !prevState.isSearchOpen
+      });
+
+    case "randomLocale":
+      console.log(prevState);
+      const random = [Math.floor(Math.random() * prevState.countries.length)];
+      const randomLocale = prevState.countries[random];
+      return Object.assign({}, prevState, {
+        locale: randomLocale.gl,
+        localeName: randomLocale.name
       });
 
     default:
@@ -65,12 +77,45 @@ const RootStack = StackNavigator(
 );
 
 class App extends Component {
+  state = {
+    isLoading: true,
+    locale: "",
+    countries: [],
+    store: store
+  };
+
+  async componentWillMount() {
+    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
+    // console.log("will mount");
+    const locale = await AsyncStorage.getItem(CURRENT_REGION);
+    const countries = await AsyncStorage.getItem(AVAILABLE_REGIONS);
+
+    if (locale) {
+      let myLocale = JSON.parse(locale);
+      const smth = {
+        locale: myLocale.gl,
+        countries: JSON.parse(countries),
+        isSearchOpen: false,
+        localeName: myLocale.name
+      };
+      this.setState({ store: createStore(reducer, smth) });
+    } else {
+      this.setState({ store: store });
+    }
+    this.setState({ isLoading: false });
+  }
+
   render() {
-    return (
-      <Provider store={store}>
-        <RootStack />
-      </Provider>
-    );
+    // console.log(store);
+    if (this.state.isLoading) {
+      return <Text>Loading Parameters</Text>;
+    } else {
+      return (
+        <Provider store={this.state.store}>
+          <RootStack />
+        </Provider>
+      );
+    }
   }
 }
 
