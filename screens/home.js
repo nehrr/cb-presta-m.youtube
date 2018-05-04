@@ -109,7 +109,7 @@ class Home extends React.Component {
     console.log(this.props);
     const search = this.props.search;
     console.log("fetchVideosSearch");
-    const query = `&part=snippet&maxResults=2&chart=mostPopular`;
+    const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
 
     fetch(url)
