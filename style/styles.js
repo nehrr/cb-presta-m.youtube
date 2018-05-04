@@ -77,12 +77,21 @@ const styles = StyleSheet.create({
 
   videoTitle: {
     height: 40,
-    backgroundColor: "#000"
+    backgroundColor: "#000",
+    flexDirection: "row"
   },
 
   trending: {
     height: 50,
     padding: 8
+  },
+
+  likes: {
+    height: 20,
+    width: 20,
+    marginLeft: 10,
+    marginTop: 10,
+    marginRight: 10
   }
 });
 

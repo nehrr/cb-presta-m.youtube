@@ -67,7 +67,7 @@ class Home extends React.Component {
     console.log(this.props.locale);
     const locale = this.props.locale ? this.props.locale : "FR";
     console.log("fetchVideos");
-    const query = "&part=snippet&order=rating&maxResults=20&chart=mostPopular";
+    const query = "&part=snippet&order=rating&maxResults=2&chart=mostPopular";
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
     fetch(url)
@@ -75,7 +75,10 @@ class Home extends React.Component {
       .then(responseJson => {
         let temp = [];
         responseJson.items.forEach(item => {
-          temp.push(item);
+          let id = item.id;
+          let snippet = item.snippet;
+          let isLiked = false;
+          temp.push({ id, snippet, isLiked });
         });
 
         this.setState({
@@ -93,7 +96,7 @@ class Home extends React.Component {
     console.log(this.props);
     const search = this.props.search;
     console.log("fetchVideosSearch");
-    const query = "&part=snippet&maxResults=20&chart=mostPopular";
+    const query = "&part=snippet&maxResults=2&chart=mostPopular";
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
 
     fetch(url)
@@ -101,7 +104,10 @@ class Home extends React.Component {
       .then(responseJson => {
         let temp = [];
         responseJson.items.forEach(item => {
-          temp.push(item);
+          let id = item.id;
+          let snippet = item.snippet;
+          let isLiked = "";
+          temp.push({ id, snippet, isLiked });
         });
 
         this.setState({
@@ -115,6 +121,7 @@ class Home extends React.Component {
 
   render() {
     const list = this.state.obj.map((item, idx) => {
+      console.log(item);
       return (
         <View key={idx} style={styles.cell}>
           <TouchableOpacity
@@ -126,6 +133,25 @@ class Home extends React.Component {
             }}
           >
             <TouchableOpacity style={styles.videoTitle}>
+              {" "}
+              <TouchableOpacity
+                onPress={() => {
+                  item.isLiked = true;
+                  console.log(item.isLiked);
+                }}
+              >
+                {!item.isLiked ? (
+                  <Image
+                    style={styles.likes}
+                    source={require("../assets/videolike.png")}
+                  />
+                ) : (
+                  <Image
+                    style={styles.likes}
+                    source={require("../assets/videoliked.png")}
+                  />
+                )}
+              </TouchableOpacity>
               {TextLimit({
                 str: item.snippet.title,
                 limit: 42,
