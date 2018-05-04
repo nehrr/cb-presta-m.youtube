@@ -27,7 +27,6 @@ const initState = {
 function reducer(prevState = initState, action) {
   switch (action.type) {
     case "getLocale":
-      // console.log("action ", action.payload.name);
       return Object.assign({}, prevState, {
         locale: action.payload.item,
         localeName: action.payload.name
@@ -38,12 +37,9 @@ function reducer(prevState = initState, action) {
       });
 
     case "randomLocale":
-      console.log(prevState);
-      const random = [Math.floor(Math.random() * prevState.countries.length)];
-      const randomLocale = prevState.countries[random];
       return Object.assign({}, prevState, {
-        locale: randomLocale.gl,
-        localeName: randomLocale.name
+        locale: action.payload.locale.gl,
+        localeName: action.payload.locale.name
       });
 
     default:
@@ -86,7 +82,6 @@ class App extends Component {
 
   async componentWillMount() {
     const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
-    // console.log("will mount");
     const locale = await AsyncStorage.getItem(CURRENT_REGION);
     const countries = await AsyncStorage.getItem(AVAILABLE_REGIONS);
 
@@ -106,7 +101,6 @@ class App extends Component {
   }
 
   render() {
-    // console.log(store);
     if (this.state.isLoading) {
       return <Text>Loading Parameters</Text>;
     } else {

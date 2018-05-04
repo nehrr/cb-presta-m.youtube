@@ -1,12 +1,5 @@
 import React from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Button
-} from "react-native";
+import { Text, View, TouchableOpacity, ScrollView, Image } from "react-native";
 import { StackNavigator } from "react-navigation";
 import { connect } from "react-redux";
 import Actions from "../components/actions";
@@ -116,7 +109,6 @@ class Home extends React.Component {
     return (
       <View style={styles.container}>
         {this.props.isSearchOpen ? <SearchBar /> : null}
-        {/* {this.props.isSearchOpen ? console.log("searchbar loading") : null} */}
         <TouchableOpacity style={styles.trending}>
           <Text style={styles.textBlack}>
             Trending in{" "}

@@ -1,10 +1,11 @@
 import React from "react";
-import { WebView, View } from "react-native";
+import { WebView } from "react-native";
 import styles from "../style/styles";
+import stringLimit from "../mlib/string";
 
 class Play extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.state.params.title.slice(0, 20),
+    title: stringLimit(navigation.state.params.title),
     headerStyle: {
       backgroundColor: "#C20712"
     }

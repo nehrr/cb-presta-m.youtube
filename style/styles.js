@@ -56,8 +56,6 @@ const styles = StyleSheet.create({
   },
 
   cell: {
-    // borderWidth: 1,
-    // borderColor: "#828289",
     width: width - 20,
     marginLeft: 10,
     marginRight: 10

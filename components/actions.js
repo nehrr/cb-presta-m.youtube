@@ -1,17 +1,22 @@
 import React from "react";
-import { View, TouchableOpacity, Image } from "react-native";
+import { View, TouchableOpacity, Image, AsyncStorage } from "react-native";
 import { StackNavigator } from "react-navigation";
 import { connect } from "react-redux";
 import styles from "../style/styles";
+import { CONFIG } from "../constants/index";
+
+randomLocale = () => {
+  console.log(this.props.countries);
+};
 
 class Actions extends React.Component {
   render() {
+    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
     return (
       <View style={styles.actions}>
         <TouchableOpacity
           style={styles.actionsMargin}
           onPress={() => this.props.dispatch({ type: "isSearchOpen" })}
-          // onPress={() => console.log(this.props)}
         >
           <Image
             style={styles.actionsImage}
@@ -20,8 +25,19 @@ class Actions extends React.Component {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionsMargin}
-          // onPress={() => console.log(getRandom().text())}
-          onPress={() => this.props.dispatch({ type: "randomLocale" })}
+          onPress={async () => {
+            const random = [
+              Math.floor(Math.random() * this.props.countries.length)
+            ];
+            await AsyncStorage.setItem(
+              CURRENT_REGION,
+              JSON.stringify(this.props.countries[random])
+            );
+            this.props.dispatch({
+              type: "randomLocale",
+              payload: { locale: this.props.countries[random] }
+            });
+          }}
         >
           <Image
             style={styles.actionsImage}
