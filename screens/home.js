@@ -23,19 +23,22 @@ class Home extends React.Component {
     isSearchOpen: false,
     locale: "",
     localeName: "",
-    search: ""
+    search: "",
+    isSearch: false
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
     console.log("getderived");
     console.log("nextProps: ", nextProps.search);
     console.log("prevState: ", prevState.search);
-    if (
-      nextProps.locale !== prevState.locale ||
-      nextProps.search !== prevState.search
-    ) {
+    if (nextProps.locale !== prevState.locale) {
       return {
         locale: nextProps.locale,
+        obj: []
+      };
+    }
+    if (nextProps.search !== prevState.search) {
+      return {
         obj: [],
         search: nextProps.search
       };
@@ -45,13 +48,12 @@ class Home extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     console.log("didupdate");
-    console.log(this.state.search);
     console.log("prevProps: ", prevProps.locale);
     console.log("prevState: ", prevState.locale);
     if (this.state.locale !== prevProps.locale) {
       this.fetchVideos();
     }
-    if (this.state.search !== prevProps.search) {
+    if (this.state.search !== prevState.search) {
       this.fetchVideosSearch();
     }
   }
@@ -144,10 +146,16 @@ class Home extends React.Component {
       <View style={styles.container}>
         {this.props.isSearchOpen ? <SearchBar /> : null}
         <TouchableOpacity style={styles.trending}>
-          <Text style={styles.textBlack}>
-            Trending in{" "}
-            {this.props.localeName ? this.props.localeName : "France"}
-          </Text>
+          {this.props.isSearch ? (
+            <Text style={styles.textBlack}>
+              Trending for {this.props.search ? this.props.search : ""}
+            </Text>
+          ) : (
+            <Text style={styles.textBlack}>
+              Trending in{" "}
+              {this.props.localeName ? this.props.localeName : "France"}
+            </Text>
+          )}
         </TouchableOpacity>
         <ScrollView>{list}</ScrollView>
       </View>
@@ -160,7 +168,8 @@ const mapStateToProps = state => {
     locale: state.locale,
     isSearchOpen: state.isSearchOpen,
     localeName: state.localeName,
-    search: state.search
+    search: state.search,
+    isSearch: state.isSearch
   };
 };
 
