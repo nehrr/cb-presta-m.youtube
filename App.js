@@ -23,7 +23,8 @@ const initState = {
   localeName: "",
   countries: [],
   search: "",
-  isSearch: false
+  isSearch: false,
+  favourites: []
 };
 
 function reducer(prevState = initState, action) {
@@ -49,6 +50,14 @@ function reducer(prevState = initState, action) {
       return Object.assign({}, prevState, {
         search: action.payload.search,
         isSearch: true
+      });
+    case "addToFavourites":
+      return Object.assign({}, prevState, {
+        favourites: action.payload.item
+      });
+    case "removeFromFavourites":
+      return Object.assign({}, prevState, {
+        favourites: action.payload.array
       });
 
     default:
@@ -88,23 +97,33 @@ class App extends Component {
     countries: [],
     search: "",
     isSearch: false,
+    favourites: [],
     store: store
   };
 
   async componentWillMount() {
-    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
+    const { AVAILABLE_REGIONS, CURRENT_REGION, FAVOURITES } = CONFIG.STORAGE;
     const locale = await AsyncStorage.getItem(CURRENT_REGION);
     const countries = await AsyncStorage.getItem(AVAILABLE_REGIONS);
+    const liked = await AsyncStorage.getItem(FAVOURITES);
 
     if (locale) {
       let myLocale = JSON.parse(locale);
+      let favourites;
+      if (JSON.parse(liked)) {
+        favourites = JSON.parse(liked);
+      } else {
+        favourites = [];
+      }
+
       const smth = {
         locale: myLocale.gl,
         countries: JSON.parse(countries),
         isSearchOpen: false,
         localeName: myLocale.name,
         search: "",
-        isSearch: false
+        isSearch: false,
+        favourites: favourites
       };
       this.setState({ store: createStore(reducer, smth) });
     } else {

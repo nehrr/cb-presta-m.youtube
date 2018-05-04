@@ -1,5 +1,12 @@
 import React from "react";
-import { Text, View, TouchableOpacity, ScrollView, Image } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Image,
+  AsyncStorage
+} from "react-native";
 import { StackNavigator } from "react-navigation";
 import { connect } from "react-redux";
 import Actions from "../components/actions";
@@ -7,6 +14,7 @@ import SearchBar from "../components/search";
 import TextLimit from "../components/text_limit";
 import styles from "../style/styles";
 import stringLimit from "../mlib/string";
+import _ from "lodash";
 import { CONFIG } from "../constants/index";
 
 class Home extends React.Component {
@@ -24,13 +32,14 @@ class Home extends React.Component {
     locale: "",
     localeName: "",
     search: "",
-    isSearch: false
+    isSearch: false,
+    favourites: []
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    console.log("getderived");
-    console.log("nextProps: ", nextProps.search);
-    console.log("prevState: ", prevState.search);
+    // console.log("getderived");
+    // console.log("nextProps: ", nextProps.search);
+    // console.log("prevState: ", prevState.search);
     if (nextProps.locale !== prevState.locale) {
       return {
         locale: nextProps.locale,
@@ -47,9 +56,9 @@ class Home extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("didupdate");
-    console.log("prevProps: ", prevProps.locale);
-    console.log("prevState: ", prevState.locale);
+    // console.log("didupdate");
+    // console.log("prevProps: ", prevProps.locale);
+    // console.log("prevState: ", prevState.locale);
     if (this.state.locale !== prevProps.locale) {
       this.fetchVideos();
     }
@@ -63,11 +72,16 @@ class Home extends React.Component {
   }
 
   fetchVideos = () => {
-    const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
-    console.log(this.props.locale);
-    const locale = this.props.locale ? this.props.locale : "FR";
+    const {
+      BASE_URL,
+      API_KEY,
+      DEFAULT_REGION,
+      DEFAULT_NB_RESULT
+    } = CONFIG.YOUTUBE;
+    // console.log(this.props.locale);
+    const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
     console.log("fetchVideos");
-    const query = "&part=snippet&order=rating&maxResults=2&chart=mostPopular";
+    const query = `&part=snippet&order=rating&maxResults=2&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
     fetch(url)
@@ -77,8 +91,7 @@ class Home extends React.Component {
         responseJson.items.forEach(item => {
           let id = item.id;
           let snippet = item.snippet;
-          let isLiked = false;
-          temp.push({ id, snippet, isLiked });
+          temp.push({ id, snippet });
         });
 
         this.setState({
@@ -92,11 +105,11 @@ class Home extends React.Component {
   };
 
   fetchVideosSearch = () => {
-    const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
+    const { BASE_URL, API_KEY, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE;
     console.log(this.props);
     const search = this.props.search;
     console.log("fetchVideosSearch");
-    const query = "&part=snippet&maxResults=2&chart=mostPopular";
+    const query = `&part=snippet&maxResults=2&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
 
     fetch(url)
@@ -106,8 +119,7 @@ class Home extends React.Component {
         responseJson.items.forEach(item => {
           let id = item.id;
           let snippet = item.snippet;
-          let isLiked = "";
-          temp.push({ id, snippet, isLiked });
+          temp.push({ id, snippet });
         });
 
         this.setState({
@@ -119,9 +131,44 @@ class Home extends React.Component {
       });
   };
 
+  addToFavourites = item => {
+    console.log(this.props.favourites);
+    const { FAVOURITES } = CONFIG.STORAGE;
+    try {
+      const newFavs = [...this.props.favourites, item];
+      this.props.dispatch({
+        type: "addToFavourites",
+        payload: { newFavs }
+      });
+      console.log("storage");
+      AsyncStorage.setItem(FAVOURITES, JSON.stringify(newFavs));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  removeFromFavourites = item => {
+    const { FAVOURITES } = CONFIG.STORAGE;
+    console.log(this.props.favourites);
+    try {
+      let temp = [...this.props.favourites];
+      temp.splice(item, 1);
+      AsyncStorage.setItem(FAVOURITES, JSON.stringify(temp)).then(() => {
+        this.props.dispatch({
+          type: "removeFromFavourites",
+          payload: { array: temp }
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   render() {
+    // console.log(this.props.favourites);
+    const { FAVOURITES } = CONFIG.STORAGE;
     const list = this.state.obj.map((item, idx) => {
-      console.log(item);
+      // console.log(item);
       return (
         <View key={idx} style={styles.cell}>
           <TouchableOpacity
@@ -136,11 +183,15 @@ class Home extends React.Component {
               {" "}
               <TouchableOpacity
                 onPress={() => {
-                  item.isLiked = true;
-                  console.log(item.isLiked);
+                  if (_.some(this.state.favourite, item)) {
+                    console.log("already exists");
+                    this.removeFromFavourites(item);
+                  } else {
+                    this.addToFavourites(item);
+                  }
                 }}
               >
-                {!item.isLiked ? (
+                {!_.some(this.props.favourites, item) ? (
                   <Image
                     style={styles.likes}
                     source={require("../assets/videolike.png")}
@@ -195,7 +246,8 @@ const mapStateToProps = state => {
     isSearchOpen: state.isSearchOpen,
     localeName: state.localeName,
     search: state.search,
-    isSearch: state.isSearch
+    isSearch: state.isSearch,
+    favourites: state.favourites
   };
 };
 
