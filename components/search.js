@@ -16,7 +16,9 @@ class SearchBar extends React.Component {
           onSubmitEditing={() =>
             this.props.dispatch({
               type: "newSearch",
-              payload: { search: this.state.search }
+              payload: {
+                search: this.state.search
+              }
             })
           }
           placeholder="Type your search here..."

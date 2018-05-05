@@ -37,9 +37,9 @@ class Home extends React.Component {
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    // console.log("getderived");
-    // console.log("nextProps: ", nextProps.search);
-    // console.log("prevState: ", prevState.search);
+    console.log("getderived");
+    console.log("nextProps: ", nextProps);
+    console.log("prevState: ", prevState);
     if (nextProps.locale !== prevState.locale) {
       return {
         locale: nextProps.locale,
@@ -80,6 +80,7 @@ class Home extends React.Component {
     } = CONFIG.YOUTUBE;
     const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
     console.log("fetchVideos");
+    // const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
@@ -108,6 +109,7 @@ class Home extends React.Component {
     console.log(this.props);
     const search = this.props.search;
     console.log("fetchVideosSearch");
+    // const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
 

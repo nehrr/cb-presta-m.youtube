@@ -77,9 +77,6 @@ const RootStack = StackNavigator(
     Home: {
       screen: Home
     },
-    Search: {
-      screen: Search
-    },
     Likes: {
       screen: Likes
     },

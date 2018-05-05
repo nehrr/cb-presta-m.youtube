@@ -85,9 +85,7 @@ class Likes extends React.Component {
     console.log("will mount");
     try {
       AsyncStorage.getItem(FAVOURITES).then(res => {
-        console.log("res:", JSON.parse(res));
         if (res) {
-          console.log("storage");
           const temp = JSON.parse(res);
           this.setState({
             favourites: temp
