@@ -6,7 +6,6 @@ import { createStore } from "redux";
 
 import styles from "./style/styles";
 import Home from "./screens/home";
-import Search from "./screens/search";
 import Likes from "./screens/likes";
 import Settings from "./screens/settings";
 import Play from "./screens/play";
