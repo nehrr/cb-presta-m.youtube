@@ -11,10 +11,6 @@ class Play extends React.Component {
     }
   });
 
-  state = {
-    isSearchOpen: false
-  };
-
   render() {
     const BASE_URL = "https://www.youtube.com/watch?v=";
 

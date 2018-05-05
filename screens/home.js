@@ -78,7 +78,6 @@ class Home extends React.Component {
       DEFAULT_REGION,
       DEFAULT_NB_RESULT
     } = CONFIG.YOUTUBE;
-    // console.log(this.props.locale);
     const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
     console.log("fetchVideos");
     const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
@@ -132,10 +131,13 @@ class Home extends React.Component {
   };
 
   addToFavourites = item => {
-    console.log(this.props.favourites);
+    console.log(item);
+    let id = item.id.videoId;
+    let newItem = item;
+    console.log(newItem);
     const { FAVOURITES } = CONFIG.STORAGE;
     try {
-      const newFavs = [...this.props.favourites, item];
+      const newFavs = [...this.props.favourites, newItem];
       this.props.dispatch({
         type: "addToFavourites",
         payload: { newFavs }
@@ -149,11 +151,15 @@ class Home extends React.Component {
 
   removeFromFavourites = item => {
     const { FAVOURITES } = CONFIG.STORAGE;
-    // console.log(this.props.favourites);
     try {
       let temp = [...this.props.favourites];
-      let newTemp = _.filter(temp, { item });
+      console.log("old array");
       console.log(temp);
+      console.log("-------------------");
+      let newTemp = temp.filter(function(el) {
+        return el.id.videoId !== item.id.videoId;
+      });
+      console.log("new array");
       console.log(newTemp);
       AsyncStorage.setItem(FAVOURITES, JSON.stringify(newTemp)).then(() => {
         this.props.dispatch({
@@ -168,9 +174,7 @@ class Home extends React.Component {
 
   render() {
     console.log("rerender");
-    // console.log(this.props.favourites);
     const list = this.state.obj.map((item, idx) => {
-      // console.log(item);
       return (
         <View key={idx} style={styles.cell}>
           <TouchableOpacity
@@ -185,12 +189,12 @@ class Home extends React.Component {
               {" "}
               <TouchableOpacity
                 onPress={() => {
-                  // console.log(item, idx);
-                  if (_.some(this.props.favourite, item)) {
+                  if (_.some(this.props.favourites, item)) {
+                    console.log("in");
                     this.removeFromFavourites(item);
-                  } else {
+                  } else if (!_.some(this.props.favourites, item)) {
+                    console.log("not in");
                     this.addToFavourites(item);
-                    // this.removeFromFavourites(item);
                   }
                 }}
               >

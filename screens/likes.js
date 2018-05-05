@@ -8,6 +8,7 @@ import {
   AsyncStorage
 } from "react-native";
 import { connect } from "react-redux";
+import _ from "lodash";
 import styles from "../style/styles";
 import Actions from "../components/actions";
 import { CONFIG } from "../constants/index";
@@ -21,6 +22,63 @@ class Likes extends React.Component {
   });
 
   state = { favourites: [] };
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.favourites !== prevState.favourites) {
+      return {
+        favourites: nextProps.favourites
+      };
+    }
+    return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.favourites !== prevProps.favourites) {
+      this.render();
+    }
+  }
+
+  addToFavourites = item => {
+    console.log(item);
+    let id = item.id.videoId;
+    let newItem = item;
+    console.log(newItem);
+    const { FAVOURITES } = CONFIG.STORAGE;
+    try {
+      const newFavs = [...this.props.favourites, newItem];
+      this.props.dispatch({
+        type: "addToFavourites",
+        payload: { newFavs }
+      });
+      console.log("storage");
+      AsyncStorage.setItem(FAVOURITES, JSON.stringify(newFavs));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  removeFromFavourites = item => {
+    const { FAVOURITES } = CONFIG.STORAGE;
+    try {
+      let temp = [...this.props.favourites];
+      console.log("old array");
+      console.log(temp);
+      console.log("-------------------");
+      let newTemp = temp.filter(function(el) {
+        return el.id.videoId !== item.id.videoId;
+      });
+      console.log("new array");
+      console.log(newTemp);
+      AsyncStorage.setItem(FAVOURITES, JSON.stringify(newTemp)).then(() => {
+        this.props.dispatch({
+          type: "removeFromFavourites",
+          payload: { array: newTemp }
+        });
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   componentWillMount() {
     const { FAVOURITES } = CONFIG.STORAGE;
@@ -42,7 +100,6 @@ class Likes extends React.Component {
   }
 
   render() {
-    console.log("state:", this.state.favourites);
     const list = this.state.favourites.map((item, idx) => {
       console.log(item);
       return (
@@ -50,12 +107,13 @@ class Likes extends React.Component {
           <TouchableOpacity>
             <TouchableOpacity style={styles.videoTitle}>
               {" "}
-              {/* <TouchableOpacity
+              <TouchableOpacity
                 onPress={() => {
-                  // AsyncStorage add
-                  if (_.some(this.props.favourite, item)) {
-                    this.removeFromFavourites(idx);
-                  } else {
+                  if (_.some(this.props.favourites, item)) {
+                    console.log("in");
+                    this.removeFromFavourites(item);
+                  } else if (!_.some(this.props.favourites, item)) {
+                    console.log("not in");
                     this.addToFavourites(item);
                   }
                 }}
@@ -71,7 +129,7 @@ class Likes extends React.Component {
                     source={require("../assets/videoliked.png")}
                   />
                 )}
-              </TouchableOpacity> */}
+              </TouchableOpacity>
               {TextLimit({
                 str: item.snippet.title,
                 limit: 42,
