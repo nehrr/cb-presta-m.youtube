@@ -33,7 +33,8 @@ class Home extends React.Component {
     localeName: "",
     search: "",
     isSearch: false,
-    favourites: []
+    favourites: [],
+    nextPage: ""
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -87,6 +88,8 @@ class Home extends React.Component {
       .then(response => response.json())
       .then(responseJson => {
         let temp = [];
+        let nextPage = responseJson.nextPageToken;
+
         responseJson.items.forEach(item => {
           let id = item.id;
           let snippet = item.snippet;
@@ -95,7 +98,8 @@ class Home extends React.Component {
 
         this.setState({
           obj: temp,
-          locale: locale
+          locale: locale,
+          nextPage: nextPage
         });
       })
       .catch(error => {
@@ -114,6 +118,8 @@ class Home extends React.Component {
       .then(response => response.json())
       .then(responseJson => {
         let temp = [];
+        let nextPage = responseJson.nextPageToken;
+
         responseJson.items.forEach(item => {
           let id = item.id;
           let snippet = item.snippet;
@@ -121,7 +127,78 @@ class Home extends React.Component {
         });
 
         this.setState({
-          obj: temp
+          obj: temp,
+          nextPage: nextPage
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  fetchMoreVideos = () => {
+    const {
+      BASE_URL,
+      API_KEY,
+      DEFAULT_REGION,
+      DEFAULT_NB_RESULT
+    } = CONFIG.YOUTUBE;
+    const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
+    const pageToken = this.state.nextPage;
+    console.log(this.state.obj);
+    console.log("fetchVideos");
+    const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
+    let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}&pageToken=${pageToken}`;
+    // console.log(url);
+
+    fetch(url)
+      .then(response => response.json())
+      .then(responseJson => {
+        // let temp = [this.state.obj];
+        let temp = [];
+        let nextPage = responseJson.nextPageToken;
+
+        responseJson.items.forEach(item => {
+          let id = item.id;
+          let snippet = item.snippet;
+          temp.push({ id, snippet });
+        });
+
+        console.log(temp);
+
+        this.setState({
+          obj: temp,
+          locale: locale,
+          nextPage: nextPage
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  fetchMoreSearchVideos = () => {
+    const { BASE_URL, API_KEY, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE;
+    const search = this.props.search;
+    const pageToken = this.state.nextPage;
+    const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
+    let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}&pageToken=${pageToken}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(responseJson => {
+        let temp = [];
+        let nextPage = responseJson.nextPageToken;
+
+        responseJson.items.forEach(item => {
+          let id = item.id;
+          let snippet = item.snippet;
+          temp.push({ id, snippet });
+        });
+
+        this.setState({
+          obj: temp,
+          nextPage: nextPage
         });
       })
       .catch(error => {
@@ -170,7 +247,19 @@ class Home extends React.Component {
   };
 
   render() {
-    const { FAVOURITES } = CONFIG.STORAGE;
+    const isCloseToBottom = ({
+      layoutMeasurement,
+      contentOffset,
+      contentSize
+    }) => {
+      const paddingToBottom = 20;
+      return (
+        layoutMeasurement.height + contentOffset.y >=
+        contentSize.height - paddingToBottom
+      );
+    };
+
+    // const { FAVOURITES } = CONFIG.STORAGE;
     console.log("rerender");
     const list = this.state.obj.map((item, idx) => {
       return (
@@ -240,7 +329,24 @@ class Home extends React.Component {
             </Text>
           )}
         </TouchableOpacity>
-        <ScrollView>{list}</ScrollView>
+        <ScrollView
+          ref="_scrollView"
+          onScroll={({ nativeEvent }) => {
+            if (isCloseToBottom(nativeEvent)) {
+              if (this.props.isSearch) {
+                console.log("is search");
+                this.fetchMoreSearchVideos();
+                this.refs._scrollView.scrollTo({ x: 0, animated: true });
+              } else {
+                console.log("is not search");
+                this.fetchMoreVideos();
+                this.refs._scrollView.scrollTo({ x: 0, animated: true });
+              }
+            }
+          }}
+        >
+          {list}
+        </ScrollView>
       </View>
     );
   }
