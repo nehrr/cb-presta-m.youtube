@@ -173,6 +173,7 @@ class Home extends React.Component {
   };
 
   render() {
+    const { FAVOURITES } = CONFIG.STORAGE;
     console.log("rerender");
     const list = this.state.obj.map((item, idx) => {
       return (
@@ -189,6 +190,7 @@ class Home extends React.Component {
               {" "}
               <TouchableOpacity
                 onPress={() => {
+                  // AsyncStorage.removeItem(FAVOURITES);
                   if (_.some(this.props.favourites, item)) {
                     console.log("in");
                     this.removeFromFavourites(item);

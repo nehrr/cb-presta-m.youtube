@@ -6,7 +6,6 @@ import { createStore } from "redux";
 
 import styles from "./style/styles";
 import Home from "./screens/home";
-import Search from "./screens/search";
 import Likes from "./screens/likes";
 import Settings from "./screens/settings";
 import Play from "./screens/play";
@@ -53,7 +52,8 @@ function reducer(prevState = initState, action) {
     case "newSearch":
       return Object.assign({}, prevState, {
         search: action.payload.search,
-        isSearch: true
+        isSearch: true,
+        isSearchOpen: false
       });
     case "addToFavourites":
       console.log(action.payload.newFavs);
@@ -76,9 +76,6 @@ const RootStack = StackNavigator(
   {
     Home: {
       screen: Home
-    },
-    Search: {
-      screen: Search
     },
     Likes: {
       screen: Likes
