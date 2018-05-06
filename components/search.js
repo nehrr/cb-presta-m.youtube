@@ -13,14 +13,15 @@ class SearchBar extends React.Component {
             this.setState({ search: text });
             // console.log(this.state);
           }}
-          onSubmitEditing={() =>
+          onSubmitEditing={() => {
+            console.log("send search");
             this.props.dispatch({
               type: "newSearch",
               payload: {
                 search: this.state.search
               }
-            })
-          }
+            });
+          }}
           placeholder="Type your search here..."
         />
       </View>

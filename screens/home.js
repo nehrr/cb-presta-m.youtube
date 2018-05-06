@@ -38,8 +38,8 @@ class Home extends React.Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     console.log("getderived");
-    console.log("nextProps: ", nextProps);
-    console.log("prevState: ", prevState);
+    console.log("nextProps: ", nextProps.isSearch);
+    console.log("prevState: ", prevState.isSearch);
     if (nextProps.locale !== prevState.locale) {
       return {
         locale: nextProps.locale,
@@ -56,9 +56,9 @@ class Home extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    // console.log("didupdate");
-    // console.log("prevProps: ", prevProps.locale);
-    // console.log("prevState: ", prevState.locale);
+    console.log("didupdate");
+    console.log("prevProps: ", prevProps.isSearch);
+    console.log("prevState: ", prevState.isSearch);
     if (this.state.locale !== prevProps.locale) {
       this.fetchVideos();
     }
@@ -80,7 +80,6 @@ class Home extends React.Component {
     } = CONFIG.YOUTUBE;
     const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
     console.log("fetchVideos");
-    // const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
@@ -106,10 +105,8 @@ class Home extends React.Component {
 
   fetchVideosSearch = () => {
     const { BASE_URL, API_KEY, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE;
-    console.log(this.props);
     const search = this.props.search;
     console.log("fetchVideosSearch");
-    // const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
 
@@ -133,8 +130,6 @@ class Home extends React.Component {
   };
 
   addToFavourites = item => {
-    console.log(item);
-    let id = item.id.videoId;
     let newItem = item;
     console.log(newItem);
     const { FAVOURITES } = CONFIG.STORAGE;

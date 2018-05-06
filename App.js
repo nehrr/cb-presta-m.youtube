@@ -52,10 +52,10 @@ function reducer(prevState = initState, action) {
     case "newSearch":
       return Object.assign({}, prevState, {
         search: action.payload.search,
-        isSearch: true
+        isSearch: true,
+        isSearchOpen: false
       });
     case "addToFavourites":
-      console.log(action.payload.newFavs);
       return Object.assign({}, prevState, {
         favourites: action.payload.newFavs
       });
