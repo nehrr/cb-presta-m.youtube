@@ -39,10 +39,8 @@ class Likes extends React.Component {
   }
 
   addToFavourites = item => {
-    console.log(item);
     let id = item.id.videoId;
     let newItem = item;
-    console.log(newItem);
     const { FAVOURITES } = CONFIG.STORAGE;
     try {
       const newFavs = [...this.props.favourites, newItem];
@@ -50,7 +48,7 @@ class Likes extends React.Component {
         type: "addToFavourites",
         payload: { newFavs }
       });
-      console.log("storage");
+      // console.log("storage");
       AsyncStorage.setItem(FAVOURITES, JSON.stringify(newFavs));
     } catch (error) {
       console.log(error);
@@ -61,14 +59,14 @@ class Likes extends React.Component {
     const { FAVOURITES } = CONFIG.STORAGE;
     try {
       let temp = [...this.props.favourites];
-      console.log("old array");
-      console.log(temp);
-      console.log("-------------------");
+      // console.log("old array");
+      // console.log(temp);
+      // console.log("-------------------");
       let newTemp = temp.filter(function(el) {
         return el.id.videoId !== item.id.videoId;
       });
-      console.log("new array");
-      console.log(newTemp);
+      // console.log("new array");
+      // console.log(newTemp);
       AsyncStorage.setItem(FAVOURITES, JSON.stringify(newTemp)).then(() => {
         this.props.dispatch({
           type: "removeFromFavourites",
@@ -82,7 +80,7 @@ class Likes extends React.Component {
 
   componentWillMount() {
     const { FAVOURITES } = CONFIG.STORAGE;
-    console.log("will mount");
+    // console.log("will mount");
     try {
       AsyncStorage.getItem(FAVOURITES).then(res => {
         if (res) {
@@ -99,7 +97,6 @@ class Likes extends React.Component {
 
   render() {
     const list = this.state.favourites.map((item, idx) => {
-      console.log(item);
       return (
         <View key={idx} style={styles.cell}>
           <TouchableOpacity>
@@ -108,10 +105,10 @@ class Likes extends React.Component {
               <TouchableOpacity
                 onPress={() => {
                   if (_.some(this.props.favourites, item)) {
-                    console.log("in");
+                    // console.log("in");
                     this.removeFromFavourites(item);
                   } else if (!_.some(this.props.favourites, item)) {
-                    console.log("not in");
+                    // console.log("not in");
                     this.addToFavourites(item);
                   }
                 }}

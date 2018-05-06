@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
-  AsyncStorage
+  AsyncStorage,
+  RefreshControl
 } from "react-native";
 import { StackNavigator } from "react-navigation";
 import { connect } from "react-redux";
@@ -34,13 +35,15 @@ class Home extends React.Component {
     search: "",
     isSearch: false,
     favourites: [],
-    nextPage: ""
+    nextPage: "",
+    prevPage: "",
+    refreshing: false
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    console.log("getderived");
-    console.log("nextProps: ", nextProps.isSearch);
-    console.log("prevState: ", prevState.isSearch);
+    // console.log("getderived");
+    // console.log("nextProps: ", nextProps);
+    // console.log("prevState: ", prevState);
     if (nextProps.locale !== prevState.locale) {
       return {
         locale: nextProps.locale,
@@ -57,9 +60,10 @@ class Home extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log("didupdate");
-    console.log("prevProps: ", prevProps.isSearch);
-    console.log("prevState: ", prevState.isSearch);
+    // console.log("didupdate");
+    // console.log("prevProps: ", prevProps);
+    // console.log("prevState: ", prevState);
+    // console.log("thisstate: ", this.state);
     if (this.state.locale !== prevProps.locale) {
       this.fetchVideos();
     }
@@ -80,7 +84,7 @@ class Home extends React.Component {
       DEFAULT_NB_RESULT
     } = CONFIG.YOUTUBE;
     const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
-    console.log("fetchVideos");
+    // console.log("fetchVideos");
     const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}`;
 
@@ -110,7 +114,7 @@ class Home extends React.Component {
   fetchVideosSearch = () => {
     const { BASE_URL, API_KEY, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE;
     const search = this.props.search;
-    console.log("fetchVideosSearch");
+    // console.log("fetchVideosSearch");
     const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}`;
 
@@ -136,7 +140,7 @@ class Home extends React.Component {
       });
   };
 
-  fetchMoreVideos = () => {
+  fetchMoreVideos = scroll => {
     const {
       BASE_URL,
       API_KEY,
@@ -144,9 +148,11 @@ class Home extends React.Component {
       DEFAULT_NB_RESULT
     } = CONFIG.YOUTUBE;
     const locale = this.props.locale ? this.props.locale : DEFAULT_REGION;
-    const pageToken = this.state.nextPage;
-    console.log(this.state.obj);
-    console.log("fetchVideos");
+    let pageToken;
+    scroll == "down"
+      ? (pageToken = this.state.nextPage)
+      : (pageToken = this.state.prevPage);
+    // console.log("fetchMoreVideos");
     const query = `&part=snippet&order=rating&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&regionCode=${locale}&pageToken=${pageToken}`;
     // console.log(url);
@@ -157,6 +163,11 @@ class Home extends React.Component {
         // let temp = [this.state.obj];
         let temp = [];
         let nextPage = responseJson.nextPageToken;
+        let prevPage;
+        responseJson.prevPageToken == undefined
+          ? (prevPage = "")
+          : (prevPage = responseJson.prevPageToken);
+        // console.log(responseJson);
 
         responseJson.items.forEach(item => {
           let id = item.id;
@@ -164,12 +175,11 @@ class Home extends React.Component {
           temp.push({ id, snippet });
         });
 
-        console.log(temp);
-
         this.setState({
           obj: temp,
           locale: locale,
-          nextPage: nextPage
+          nextPage: nextPage,
+          prevPage: prevPage
         });
       })
       .catch(error => {
@@ -177,10 +187,12 @@ class Home extends React.Component {
       });
   };
 
-  fetchMoreSearchVideos = () => {
+  fetchMoreSearchVideos = scroll => {
     const { BASE_URL, API_KEY, DEFAULT_NB_RESULT } = CONFIG.YOUTUBE;
     const search = this.props.search;
-    const pageToken = this.state.nextPage;
+    scroll == "down"
+      ? (pageToken = this.state.nextPage)
+      : (pageToken = this.state.prevPage);
     const query = `&part=snippet&maxResults=${DEFAULT_NB_RESULT}&chart=mostPopular`;
     let url = `${BASE_URL}/search?${query}&key=${API_KEY}&q=${search}&pageToken=${pageToken}`;
 
@@ -189,6 +201,10 @@ class Home extends React.Component {
       .then(responseJson => {
         let temp = [];
         let nextPage = responseJson.nextPageToken;
+        let prevPage;
+        responseJson.prevPageToken == undefined
+          ? (prevPage = "")
+          : (prevPage = responseJson.prevPageToken);
 
         responseJson.items.forEach(item => {
           let id = item.id;
@@ -198,7 +214,8 @@ class Home extends React.Component {
 
         this.setState({
           obj: temp,
-          nextPage: nextPage
+          nextPage: nextPage,
+          prevPage: prevPage
         });
       })
       .catch(error => {
@@ -206,9 +223,28 @@ class Home extends React.Component {
       });
   };
 
+  refresh = scroll => {
+    if (this.props.isSearch) {
+      if (this.state.prevPage !== "") {
+        // console.log("is search");
+        this.fetchMoreSearchVideos(scroll);
+        this.refs._scrollView.scrollTo({ y: 5, animated: true });
+      } else {
+        this.fetchVideosSearch();
+      }
+    } else {
+      // console.log("is not search");
+      if (this.state.prevPage !== "") {
+        this.fetchMoreVideos(scroll);
+        this.refs._scrollView.scrollTo({ y: 5, animated: true });
+      } else {
+        this.fetchVideos();
+      }
+    }
+  };
+
   addToFavourites = item => {
     let newItem = item;
-    console.log(newItem);
     const { FAVOURITES } = CONFIG.STORAGE;
     try {
       const newFavs = [...this.props.favourites, newItem];
@@ -216,7 +252,7 @@ class Home extends React.Component {
         type: "addToFavourites",
         payload: { newFavs }
       });
-      console.log("storage");
+      // console.log("storage");
       AsyncStorage.setItem(FAVOURITES, JSON.stringify(newFavs));
     } catch (error) {
       console.log(error);
@@ -227,14 +263,14 @@ class Home extends React.Component {
     const { FAVOURITES } = CONFIG.STORAGE;
     try {
       let temp = [...this.props.favourites];
-      console.log("old array");
-      console.log(temp);
-      console.log("-------------------");
+      // console.log("old array");
+      // console.log(temp);
+      // console.log("-------------------");
       let newTemp = temp.filter(function(el) {
         return el.id.videoId !== item.id.videoId;
       });
-      console.log("new array");
-      console.log(newTemp);
+      // console.log("new array");
+      // console.log(newTemp);
       AsyncStorage.setItem(FAVOURITES, JSON.stringify(newTemp)).then(() => {
         this.props.dispatch({
           type: "removeFromFavourites",
@@ -259,8 +295,7 @@ class Home extends React.Component {
       );
     };
 
-    // const { FAVOURITES } = CONFIG.STORAGE;
-    console.log("rerender");
+    // console.log("rerender");
     const list = this.state.obj.map((item, idx) => {
       return (
         <View key={idx} style={styles.cell}>
@@ -278,10 +313,10 @@ class Home extends React.Component {
                 onPress={() => {
                   // AsyncStorage.removeItem(FAVOURITES);
                   if (_.some(this.props.favourites, item)) {
-                    console.log("in");
+                    // console.log("in");
                     this.removeFromFavourites(item);
                   } else if (!_.some(this.props.favourites, item)) {
-                    console.log("not in");
+                    // console.log("not in");
                     this.addToFavourites(item);
                   }
                 }}
@@ -334,16 +369,24 @@ class Home extends React.Component {
           onScroll={({ nativeEvent }) => {
             if (isCloseToBottom(nativeEvent)) {
               if (this.props.isSearch) {
-                console.log("is search");
-                this.fetchMoreSearchVideos();
-                this.refs._scrollView.scrollTo({ x: 0, animated: true });
+                // console.log("is search");
+                this.fetchMoreSearchVideos("down");
+                this.refs._scrollView.scrollTo({ y: 5, animated: true });
               } else {
-                console.log("is not search");
-                this.fetchMoreVideos();
-                this.refs._scrollView.scrollTo({ x: 0, animated: true });
+                // console.log("is not search");
+                this.fetchMoreVideos("down");
+                this.refs._scrollView.scrollTo({ y: 5, animated: true });
               }
             }
           }}
+          refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={() => {
+                this.refresh("up");
+              }}
+            />
+          }
         >
           {list}
         </ScrollView>

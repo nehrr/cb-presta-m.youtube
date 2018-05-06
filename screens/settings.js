@@ -21,10 +21,9 @@ class Settings extends React.Component {
 
   componentWillMount() {
     const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
-    console.log("will mount");
+    // console.log("will mount");
     try {
       AsyncStorage.getItem(AVAILABLE_REGIONS).then(res => {
-        console.log(res);
         if (res) {
           const temp = JSON.parse(res);
           this.setState({
@@ -33,7 +32,6 @@ class Settings extends React.Component {
         }
       });
       AsyncStorage.getItem(CURRENT_REGION).then(res => {
-        console.log(res);
         if (res) {
           const temp = JSON.parse(res);
           this.setState({
@@ -63,7 +61,7 @@ class Settings extends React.Component {
         }
 
         try {
-          console.log("storage");
+          // console.log("storage");
           AsyncStorage.setItem(AVAILABLE_REGIONS, JSON.stringify(temp));
         } catch (error) {
           console.log(error);
@@ -86,7 +84,7 @@ class Settings extends React.Component {
       if (item.gl == code) {
         res = item.name;
         try {
-          console.log("storage");
+          // console.log("storage");
           AsyncStorage.setItem(CURRENT_REGION, JSON.stringify(item));
         } catch (error) {
           console.log(error);

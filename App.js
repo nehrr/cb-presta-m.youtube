@@ -32,7 +32,8 @@ function reducer(prevState = initState, action) {
     case "getLocale":
       return Object.assign({}, prevState, {
         locale: action.payload.item,
-        localeName: action.payload.name
+        localeName: action.payload.name,
+        isSearch: false
       });
     case "getCountries":
       return Object.assign({}, prevState, {
