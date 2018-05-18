@@ -73,6 +73,37 @@ class Home extends React.Component {
   }
 
   componentDidMount() {
+    const { AVAILABLE_REGIONS, CURRENT_REGION } = CONFIG.STORAGE;
+    const { BASE_URL, API_KEY } = CONFIG.YOUTUBE;
+    const query = "part=snippet&hl=en_GB";
+    let url = `${BASE_URL}/i18nRegions?${query}&key=${API_KEY}`;
+
+    fetch(url)
+      .then(response => response.json())
+      .then(responseJson => {
+        let temp = [];
+        for (let item of responseJson.items) {
+          let gl = item.snippet.gl;
+          let name = item.snippet.name;
+          temp.push({ gl, name });
+        }
+
+        try {
+          // console.log("storage");
+          AsyncStorage.setItem(AVAILABLE_REGIONS, JSON.stringify(temp));
+        } catch (error) {
+          console.log(error);
+        }
+        this.props.dispatch({ type: "getCountries", payload: { temp } });
+        this.setState({
+          countries: temp
+        });
+      })
+
+      .catch(error => {
+        console.error(error);
+      });
+
     this.fetchVideos();
   }
 

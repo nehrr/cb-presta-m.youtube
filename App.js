@@ -135,6 +135,7 @@ class App extends Component {
       this.setState({ store: store });
     }
     this.setState({ isLoading: false });
+    // console.log(this.state.countries);
   }
 
   render() {

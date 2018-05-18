@@ -99,7 +99,14 @@ class Likes extends React.Component {
     const list = this.state.favourites.map((item, idx) => {
       return (
         <View key={idx} style={styles.cell}>
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              this.props.navigation.navigate("Play", {
+                url: item.id.videoId,
+                title: item.snippet.title
+              });
+            }}
+          >
             <TouchableOpacity style={styles.videoTitle}>
               {" "}
               <TouchableOpacity
